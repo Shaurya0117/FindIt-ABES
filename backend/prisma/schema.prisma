@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  role      String   @default("STUDENT") // STUDENT, ADMIN
+  items     Item[]   // Items reported by this user
+  claims    Claim[]  // Claims made by this user
+  createdAt DateTime @default(now())
+}
+
+model Item {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  category    String   // Electronics, Books, ID Cards, Others
+  status      String   @default("LOST") // LOST, FOUND, CLAIMED
+  location    String
+  date        DateTime @default(now())
+  imageUrl    String?
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  claims      Claim[]
+  createdAt   DateTime @default(now())
+}
+
+model Claim {
+  id        Int      @id @default(autoincrement())
+  itemId    Int
+  item      Item     @relation(fields: [itemId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  status    String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  message   String?
+  createdAt DateTime @default(now())
+}
