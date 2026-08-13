@@ -6,7 +6,8 @@ function Dashboard() {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/users/dashboard')
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    fetch(`${API_URL}/api/users/dashboard`)
       .then(res => res.json())
       .then(data => setUserData(data))
       .catch(err => console.error(err));

@@ -11,7 +11,8 @@ function ItemDetails() {
   const [hasClaimed, setHasClaimed] = useState(false);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/items/${id}`)
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    fetch(`${API_URL}/api/items/${id}`)
       .then(res => res.json())
       .then(data => setItem(data))
       .catch(err => console.error(err));
@@ -22,7 +23,8 @@ function ItemDetails() {
     setIsClaiming(true);
     
     try {
-      const response = await fetch('http://localhost:5000/api/claims', {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const response = await fetch(`${API_URL}/api/claims`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ itemId: id, message: claimMessage })

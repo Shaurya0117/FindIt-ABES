@@ -7,7 +7,8 @@ function Home() {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/items')
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    fetch(`${API_URL}/api/items`)
       .then(res => res.json())
       .then(data => setItems(data))
       .catch(err => console.error(err));
