@@ -11,6 +11,8 @@ function ReportItem() {
     status: 'LOST',
     location: ''
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -18,11 +20,30 @@ function ReportItem() {
     setIsSubmitting(true);
     
     try {
+      let finalImageUrl = 'https://via.placeholder.com/300';
+      if (imageFile) {
+        const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+        const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+        if (cloudName && uploadPreset) {
+          const uploadData = new FormData();
+          uploadData.append('file', imageFile);
+          uploadData.append('upload_preset', uploadPreset);
+          const uploadRes = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+            method: 'POST',
+            body: uploadData
+          });
+          const uploadJson = await uploadRes.json();
+          if (uploadJson.secure_url) finalImageUrl = uploadJson.secure_url;
+        } else {
+           console.warn('Cloudinary not configured, using placeholder');
+        }
+      }
+
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       const response = await fetch(`${API_URL}/api/items`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ ...formData, imageUrl: finalImageUrl })
       });
       
       if (response.ok) {
@@ -138,12 +159,26 @@ function ReportItem() {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Photo (Optional Demo)</label>
-            <div className="flex items-center justify-center" style={{ border: '2px dashed var(--border-color)', borderRadius: '0.5rem', padding: '2rem', color: '#94a3b8' }}>
-              <div className="text-center">
-                <Camera size={32} style={{ margin: '0 auto 0.5rem auto' }} />
-                <p>Click to upload or drag and drop</p>
-              </div>
+            <label className="form-label">Photo (Required for claims)</label>
+            <div style={{ border: '2px dashed var(--border-color)', borderRadius: '0.5rem', padding: '1rem', textAlign: 'center' }}>
+              {imagePreview ? (
+                <div style={{ marginBottom: '1rem' }}>
+                  <img src={imagePreview} alt="Preview" style={{ maxHeight: '200px', borderRadius: '0.5rem', margin: '0 auto', objectFit: 'contain' }} />
+                  <button type="button" className="btn btn-primary" style={{ marginTop: '1rem' }} onClick={() => { setImageFile(null); setImagePreview(null); }}>Remove Photo</button>
+                </div>
+              ) : (
+                <>
+                  <Camera size={32} style={{ margin: '0 auto 0.5rem auto', color: '#94a3b8' }} />
+                  <p style={{ color: '#94a3b8', marginBottom: '1rem' }}>Click to select a photo</p>
+                  <input type="file" accept="image/*" onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setImageFile(e.target.files[0]);
+                        setImagePreview(URL.createObjectURL(e.target.files[0]));
+                      }
+                    }}
+                  />
+                </>
+              )}
             </div>
           </div>
 
