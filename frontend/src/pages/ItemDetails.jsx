@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MapPin, Calendar, User, ArrowLeft, CheckCircle } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { formatDistanceToNow } from 'date-fns';
 
 function ItemDetails() {
   const { id } = useParams();
@@ -12,7 +14,7 @@ function ItemDetails() {
 
   useEffect(() => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    fetch(`${API_URL}/api/items/${id}`)
+    fetch(${API_URL}/api/items/)
       .then(res => res.json())
       .then(data => setItem(data))
       .catch(err => console.error(err));
@@ -24,7 +26,7 @@ function ItemDetails() {
     
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      const response = await fetch(`${API_URL}/api/claims`, {
+      const response = await fetch(${API_URL}/api/claims, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ itemId: id, message: claimMessage })
@@ -32,12 +34,13 @@ function ItemDetails() {
       
       if (response.ok) {
         setHasClaimed(true);
+        toast.success('Request submitted successfully!');
       } else {
-        alert('Failed to submit claim');
+        toast.error('Failed to submit claim');
       }
     } catch (error) {
       console.error(error);
-      alert('Error connecting to server');
+      toast.error('Error connecting to server');
     } finally {
       setIsClaiming(false);
     }
@@ -52,8 +55,14 @@ function ItemDetails() {
       </button>
 
       <div className="glass-card flex gap-4" style={{ flexDirection: 'column' }}>
+        {item.imageUrl && item.imageUrl !== 'https://via.placeholder.com/300' && (
+          <div style={{ width: '100%', maxHeight: '400px', borderRadius: '0.75rem', overflow: 'hidden', marginBottom: '1rem' }}>
+            <img src={item.imageUrl} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'contain', backgroundColor: 'rgba(0,0,0,0.2)' }} />
+          </div>
+        )}
+
         <div>
-          <span className={`badge ${item.status === 'LOST' ? 'badge-lost' : 'badge-found'}`}>
+          <span className={adge }>
             {item.status}
           </span>
           <h1 style={{ marginTop: '1rem', fontSize: '2.5rem' }}>{item.title}</h1>
@@ -66,7 +75,7 @@ function ItemDetails() {
               <MapPin className="text-primary-color" /> {item.location}
             </div>
             <div className="flex items-center gap-2" style={{ color: '#cbd5e1' }}>
-              <Calendar className="text-primary-color" /> {new Date(item.createdAt).toLocaleDateString()}
+              <Calendar className="text-primary-color" /> Posted {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
             </div>
             <div className="flex items-center gap-2" style={{ color: '#cbd5e1' }}>
               <User className="text-primary-color" /> Reported by {item.user?.name || 'Anonymous'}
@@ -74,7 +83,7 @@ function ItemDetails() {
           </div>
 
           <h3 style={{ marginBottom: '1rem' }}>Description</h3>
-          <p style={{ lineHeight: '1.8', color: '#e2e8f0', marginBottom: '2rem', whiteSpace: 'pre-line' }}>
+          <p style={{ lineHeight: '1.8', color: '#e2e8f0', marginBottom: '2rem', whiteSpace: 'pre-line', padding: '1.5rem', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '0.75rem', border: '1px solid rgba(255,255,255,0.05)' }}>
             {item.description}
           </p>
         </div>

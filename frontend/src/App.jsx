@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Search, PlusCircle, Package } from 'lucide-react';
+import { Toaster } from 'react-hot-toast';
 import Home from './pages/Home';
 import ReportItem from './pages/ReportItem';
 import ItemDetails from './pages/ItemDetails';
@@ -30,6 +31,13 @@ function App() {
   return (
     <Router>
       <div className="container">
+        <Toaster position="bottom-right" toastOptions={{
+          style: {
+            background: '#1e293b',
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.1)'
+          }
+        }} />
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, MapPin, Tag } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 function ReportItem() {
   const navigate = useNavigate();
@@ -47,13 +48,14 @@ function ReportItem() {
       });
       
       if (response.ok) {
+        toast.success('Item reported successfully!');
         navigate('/');
       } else {
-        alert('Failed to report item');
+        toast.error('Failed to report item');
       }
     } catch (error) {
       console.error(error);
-      alert('Error connecting to server');
+      toast.error('Error connecting to server');
     } finally {
       setIsSubmitting(false);
     }
