@@ -11,7 +11,7 @@ function Home() {
 
   useEffect(() => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    fetch(${API_URL}/api/items)
+    fetch(`${API_URL}/api/items`)
       .then(res => res.json())
       .then(data => setItems(data))
       .catch(err => console.error(err));
@@ -49,9 +49,9 @@ function Home() {
 
       <div className="filters-container">
         <div className="filter-pills">
-          <button className={ilter-pill } onClick={() => setFilterStatus('ALL')}>All Items</button>
-          <button className={ilter-pill } onClick={() => setFilterStatus('LOST')}>Lost Only</button>
-          <button className={ilter-pill } onClick={() => setFilterStatus('FOUND')}>Found Only</button>
+          <button className={`filter-pill ${filterStatus === 'ALL' ? 'active' : ''}`} onClick={() => setFilterStatus('ALL')}>All Items</button>
+          <button className={`filter-pill ${filterStatus === 'LOST' ? 'active' : ''}`} onClick={() => setFilterStatus('LOST')}>Lost Only</button>
+          <button className={`filter-pill ${filterStatus === 'FOUND' ? 'active' : ''}`} onClick={() => setFilterStatus('FOUND')}>Found Only</button>
         </div>
         
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#94a3b8' }}>
@@ -92,7 +92,7 @@ function Home() {
               
               <div className="card-image-container">
                 <img src={item.imageUrl || 'https://via.placeholder.com/300'} alt={item.title} className="card-image" />
-                <span className={adge } style={{ position: 'absolute', top: '1rem', right: '1rem', backdropFilter: 'blur(4px)' }}>
+                <span className={`badge ${item.status === 'LOST' ? 'badge-lost' : 'badge-found'}`} style={{ position: 'absolute', top: '1rem', right: '1rem', backdropFilter: 'blur(4px)' }}>
                   {item.status}
                 </span>
               </div>
@@ -111,7 +111,7 @@ function Home() {
                 <div className="flex items-center gap-2" style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
                   <MapPin size={16} /> <span style={{ maxWidth: '120px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.location}</span>
                 </div>
-                <Link to={/item/} className="btn btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
+                <Link to={`/item/${item.id}`} className="btn btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}>
                   Details
                 </Link>
               </div>

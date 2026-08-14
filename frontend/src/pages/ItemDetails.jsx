@@ -14,7 +14,7 @@ function ItemDetails() {
 
   useEffect(() => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    fetch(${API_URL}/api/items/)
+    fetch(`${API_URL}/api/items/${id}`)
       .then(res => res.json())
       .then(data => setItem(data))
       .catch(err => console.error(err));
@@ -26,7 +26,7 @@ function ItemDetails() {
     
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      const response = await fetch(${API_URL}/api/claims, {
+      const response = await fetch(`${API_URL}/api/claims`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ itemId: id, message: claimMessage })
@@ -62,7 +62,7 @@ function ItemDetails() {
         )}
 
         <div>
-          <span className={adge }>
+          <span className={`badge ${item.status === 'LOST' ? 'badge-lost' : 'badge-found'}`}>
             {item.status}
           </span>
           <h1 style={{ marginTop: '1rem', fontSize: '2.5rem' }}>{item.title}</h1>
