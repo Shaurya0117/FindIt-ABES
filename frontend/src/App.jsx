@@ -1,6 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { Search, PlusCircle, Package } from 'lucide-react';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Search, Plus, Package, BookOpen, User } from 'lucide-react';
 import { Toaster } from 'react-hot-toast';
 import Home from './pages/Home';
 import ReportItem from './pages/ReportItem';
@@ -8,19 +8,37 @@ import ItemDetails from './pages/ItemDetails';
 import Dashboard from './pages/Dashboard';
 
 function Navbar() {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
   return (
     <nav className="navbar">
       <Link to="/" className="logo">
-        <Package className="text-primary-color" />
-        FindIt@ABES
+        <div className="logo-main">
+          <Package color="#2dd4bf" size={24} />
+          FindIt@ABES
+        </div>
+        <div className="logo-sub">Campus Recovery Network</div>
       </Link>
+      
       <div className="nav-links">
-        <Link to="/" className="nav-link">Explore</Link>
-        <Link to="/dashboard" className="nav-link">Dashboard</Link>
+        <Link to="/" className={
+av-link }>
+          <Search size={16} /> Browse
+        </Link>
+        <Link to="/report" className={
+av-link }>
+          <Plus size={16} /> Report an item
+        </Link>
+        <Link to="/dashboard" className={
+av-link }>
+          <BookOpen size={16} /> My dashboard
+        </Link>
       </div>
+
       <div>
         <Link to="/report" className="btn btn-primary">
-          <PlusCircle size={20} /> Report Item
+          <Plus size={18} /> Report item
         </Link>
       </div>
     </nav>
