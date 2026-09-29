@@ -22,16 +22,13 @@ function Navbar() {
       </Link>
       
       <div className="nav-links">
-        <Link to="/" className={
-av-link }>
+        <Link to="/" className="nav-link">
           <Search size={16} /> Browse
         </Link>
-        <Link to="/report" className={
-av-link }>
+        <Link to="/report" className="nav-link">
           <Plus size={16} /> Report an item
         </Link>
-        <Link to="/dashboard" className={
-av-link }>
+        <Link to="/dashboard" className="nav-link">
           <BookOpen size={16} /> My dashboard
         </Link>
       </div>
