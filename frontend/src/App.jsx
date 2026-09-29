@@ -1,18 +1,23 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Search, Plus, Package, BookOpen, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, NavLink, Link, useLocation } from 'react-router-dom';
+import { Search, Plus, Package, BookOpen, Menu, X } from 'lucide-react';
 import { Toaster } from 'react-hot-toast';
+import { AnimatePresence, motion } from 'framer-motion';
 import Home from './pages/Home';
+import Landing from './pages/Landing';
 import ReportItem from './pages/ReportItem';
 import ItemDetails from './pages/ItemDetails';
 import Dashboard from './pages/Dashboard';
+import NotFound from './pages/NotFound';
+import Footer from './components/Footer';
 
 function Navbar() {
   const location = useLocation();
-  const currentPath = location.pathname;
+  const isLanding = location.pathname === '/';
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar ${isLanding ? 'navbar-transparent' : ''}`}>
       <Link to="/" className="logo">
         <div className="logo-main">
           <Package color="#2dd4bf" size={24} />
@@ -20,32 +25,65 @@ function Navbar() {
         </div>
         <div className="logo-sub">Campus Recovery Network</div>
       </Link>
-      
-      <div className="nav-links">
-        <Link to="/" className="nav-link">
+
+      {/* Desktop nav */}
+      <div className={`nav-links ${mobileOpen ? 'open' : ''}`}>
+        <NavLink to="/browse" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} onClick={() => setMobileOpen(false)}>
           <Search size={16} /> Browse
-        </Link>
-        <Link to="/report" className="nav-link">
-          <Plus size={16} /> Report an item
-        </Link>
-        <Link to="/dashboard" className="nav-link">
-          <BookOpen size={16} /> My dashboard
-        </Link>
+        </NavLink>
+        <NavLink to="/report" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} onClick={() => setMobileOpen(false)}>
+          <Plus size={16} /> Report
+        </NavLink>
+        <NavLink to="/dashboard" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} onClick={() => setMobileOpen(false)}>
+          <BookOpen size={16} /> Dashboard
+        </NavLink>
       </div>
 
-      <div>
-        <Link to="/report" className="btn btn-primary">
+      <div className="nav-right">
+        <Link to="/report" className="btn btn-primary btn-nav-cta">
           <Plus size={18} /> Report item
         </Link>
+        <button className="hamburger" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
+          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </div>
     </nav>
+  );
+}
+
+function AnimatedRoutes() {
+  const location = useLocation();
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Landing />} />
+        <Route path="/browse" element={<PageWrap><Home /></PageWrap>} />
+        <Route path="/report" element={<PageWrap><ReportItem /></PageWrap>} />
+        <Route path="/item/:id" element={<PageWrap><ItemDetails /></PageWrap>} />
+        <Route path="/dashboard" element={<PageWrap><Dashboard /></PageWrap>} />
+        <Route path="*" element={<PageWrap><NotFound /></PageWrap>} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
+function PageWrap({ children }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -16 }}
+      transition={{ duration: 0.3 }}
+    >
+      {children}
+    </motion.div>
   );
 }
 
 function App() {
   return (
     <Router>
-      <div className="container">
+      <div className="app-wrapper">
         <Toaster position="bottom-right" toastOptions={{
           style: {
             background: '#1e293b',
@@ -53,13 +91,11 @@ function App() {
             border: '1px solid rgba(255,255,255,0.1)'
           }
         }} />
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/report" element={<ReportItem />} />
-          <Route path="/item/:id" element={<ItemDetails />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-        </Routes>
+        <div className="container">
+          <Navbar />
+          <AnimatedRoutes />
+        </div>
+        <Footer />
       </div>
     </Router>
   );

@@ -93,6 +93,36 @@ app.post('/api/claims', async (req, res) => {
   }
 });
 
+// Update item status
+app.patch('/api/items/:id/status', async (req, res) => {
+  try {
+    const { status } = req.body;
+    const item = await prisma.item.update({
+      where: { id: parseInt(req.params.id) },
+      data: { status }
+    });
+    res.json(item);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete an item
+app.delete('/api/items/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    await prisma.claim.deleteMany({
+      where: { itemId: id }
+    });
+    await prisma.item.delete({
+      where: { id }
+    });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get user dashboard data
 app.get('/api/users/dashboard', async (req, res) => {
   try {
@@ -104,6 +134,18 @@ app.get('/api/users/dashboard', async (req, res) => {
       }
     });
     res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Public stats for landing page (no auth needed)
+app.get('/api/stats', async (req, res) => {
+  try {
+    const totalItems = await prisma.item.count();
+    const resolvedItems = await prisma.item.count({ where: { status: 'RESOLVED' } });
+    const totalUsers = await prisma.user.count();
+    res.json({ totalItems, resolvedItems, totalUsers });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
